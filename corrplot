@@ -1,0 +1,8 @@
+library(tidyverse)
+library(readr)
+library(ggcorrplot)
+
+df <- read_csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/correlation matrix/all variables.csv")
+
+corr <- cor(df, use = "complete.obs")
+ggcorrplot(corr, hc.order = TRUE, type = "lower", colors = c("#6D9EC1", "white", "#E46726"))
