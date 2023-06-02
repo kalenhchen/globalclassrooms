@@ -1,0 +1,58 @@
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+library(ggsignif)
+
+### data sets
+
+IDingBarriers <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/IDingBarriers.csv")
+youthUnions <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/youthUnions.csv")
+womensMarch <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/womensMarch.csv")
+tuitionUBI <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/tuitionUBI.csv")
+EXAMyouthUnions <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/finalExam/EXAMyouthUnions.csv")
+EXAMtuitionUBI <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/raw data/liwc extractions/finalExam/EXAMtuitionUBI.csv")
+
+# bar plotting
+
+Identifying_Barriers <- IDingBarriers %>% select(Analytic, Clout, Tone, Cognition, Social, Lifestyle, work, Perception, space) %>% mutate(Homework = "Identifying_Barriers")
+Youth_and_Unions <- youthUnions %>% select(Analytic, Clout, Tone, Cognition, Social, Lifestyle, work, Perception, space) %>% mutate(Homework = "Youth_and_Unions")
+Womens_March <- womensMarch %>% select(Analytic, Clout, Tone, Cognition, Social, Lifestyle, work, Perception, space) %>% mutate(Homework = "Womens_March")
+Free_tuition_and_UBI <- tuitionUBI %>% select(Analytic, Clout, Tone, Cognition, Social, Lifestyle, work, Perception, space) %>% mutate(Homework = "Free_tuition_and_UBI")
+
+# combine to one data set
+all_scores <- rbind(Identifying_Barriers, Youth_and_Unions, Womens_March, Free_tuition_and_UBI)
+all_scores <- all_scores %>% 
+  pivot_longer(-Homework, names_to = "Variable", values_to = "score")
+
+# aggregate scores based on dimensions
+library(stringr)
+all_scores$Variable <- str_to_title(all_scores$Variable)
+all_scores <- all_scores %>% mutate(var2 = case_when(Variable == "Analytic"~"Thinking",
+                                                     Variable == "Cognition" ~"Thinking",
+                                                     Variable == "Clout" ~ "Social Leadership",
+                                                     Variable == "Social"  ~ "Social Leadership",
+                                                     Variable == "Lifestyle" ~  "Work and Lifestyle",
+                                                     Variable == "Work" ~  "Work and Lifestyle",
+                                                     Variable == "Perception"~"Experiential",
+                                                     Variable == "Space"~"Experiential",
+                                                     Variable =="Tone"~"Experiential"
+))
+
+all_scores$Variable <- factor(all_scores$Variable, levels =c("Analytic","Cognition", "Clout", "Social", "Lifestyle", "Work", "Perception", "Space", "Tone"))
+
+all_scores %>% 
+  group_by(Variable, Homework) %>% 
+  mutate(mean = mean(score)) %>% 
+  mutate(Homework = factor(Homework, levels = c("Identifying_Barriers", "Youth_and_Unions", "Womens_March", "Free_tuition_and_UBI"))) %>% 
+  ggplot(aes(x = Variable,  y = mean, fill = Homework)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  labs(title = "", caption = "Percentage of words in student responses that fall into select LIWC-22 categories.", x = "Linguistic dimension",  y = "Mean score") +
+  theme(legend.position = c(0.8, 0.8)) +
+  ylim(0, 105) +
+  geom_signif(y_position = c(100,100), xmin = c(0.5,2.5), 
+              xmax = c(2,4.3), annotation = c("Thinking","Social Leadership"),
+              tip_length = .05) +
+  geom_signif(y_position = c(60,60), xmin = c(4.6,6.5), 
+              xmax = c(6.4,9.5), annotation = c("Work & Lifestyle","Experiential"),
+              tip_length = .05)
