@@ -49,7 +49,7 @@ all_scores$Variable <- factor(all_scores$Variable, levels =c("Analytic","Cogniti
 
 all_scores %>% 
   group_by(Variable, Homework) %>% 
-  mutate(mean = mean(score)) %>% 
+  mutate(mean = mean(score,na.rm=T)) %>% 
   mutate(Homework = factor(Homework, levels = c("HW_Identifying_Barriers", "HW_Youth_and_Unions", "HW_Womens_March", "HW_Free_tuition_and_UBI", "FINAL_Youth_and_Unions", "FINAL_Free_tuition_and_UBI"))) %>% 
   ggplot(aes(x = Variable,  y = mean, fill = Homework)) +
   geom_bar(position = "dodge", stat = "identity") +
