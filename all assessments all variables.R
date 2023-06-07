@@ -57,14 +57,18 @@ all_scores <- all_scores %>% mutate(var2 = case_when(Variable == "Analytic"~"Thi
 
 all_scores$Variable <- factor(all_scores$Variable, levels =c("Analytic","Cognition","Clout","Social","Lifestyle","Work","Perception","Space","Tone"))
 
+my_colors <- c("#db735c", "#efa86e", "#9a8a76", "#f3c57b", "#7a6752", "#2a91a2")
+
+
 all_scores %>% 
   group_by(Variable, Assessment) %>% 
   mutate(mean = mean(score,na.rm=T)) %>% 
   mutate(Assessment = factor(Assessment, levels = c("Identifying Barriers HW","Youth and Unions HW","Women's March HW","Free tuition and UBI HW","Youth and Unions related exam responses","Free tuition and UBI related exam responses"))) %>% 
   ggplot(aes(x = Variable,  y = mean, fill = Assessment)) +
   geom_bar(position = "dodge", stat = "identity") +
+  scale_fill_manual(values = my_colors) +
   labs(title = "", caption = "Percentage of words in student responses that fall into select LIWC-22 categories.",x = "Linguistic dimension",  y = "Mean score") +
-  theme(legend.position = "right") +
+  theme(legend.position = "bottom") +
   ylim(0, 90) +
   geom_signif(y_position = c(90,80), xmin = c(0.5,2.5), 
               xmax = c(2.4,4.4), annotation = c("Thinking","Social Leadership"),
