@@ -1,0 +1,35 @@
+library(readxl)
+library(dplyr)
+library(stats)
+
+columns_to_read <- c("Analytic")
+
+HW_Identifying_Barriers <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/homework/IDingBarriers.csv") %>%
+  select(all_of(columns_to_read))
+HW_Youth_and_Unions <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/homework/youthUnions.csv") %>%
+  select(all_of(columns_to_read))
+HW_Womens_March <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/homework/womensMarch.csv") %>%
+  select(all_of(columns_to_read))
+HW_Free_tuition_and_UBI <- read.csv("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/homework/tuitionUBI.csv") %>%
+  select(all_of(columns_to_read))
+FINAL_Youth_and_Unions <- read_xlsx("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/final exam/final, youth and unions.xlsx") %>%
+  select(all_of(columns_to_read))
+FINAL_Free_tuition_and_UBI <- read_xlsx("C:/Users/kalen/OneDrive - University of Toronto/global classrooms/data analysis/liwc variable extractions (primary 9)/final exam/final, free tuition and UBI.xlsx") %>%
+  select(all_of(columns_to_read))
+
+all_scores <- bind_rows(
+  HW_Identifying_Barriers %>% mutate(Assessment = "Identifying Barriers HW"),
+  HW_Youth_and_Unions %>% mutate(Assessment = "Youth and Unions HW"),
+  HW_Womens_March %>% mutate(Assessment = "Women's March HW"),
+  HW_Free_tuition_and_UBI %>% mutate(Assessment = "Free tuition and UBI HW"),
+  FINAL_Youth_and_Unions %>% mutate(Assessment = "Youth and Unions related exam responses"),
+  FINAL_Free_tuition_and_UBI %>% mutate(Assessment = "Free tuition and UBI related exam responses")
+)
+
+anova_result <- aov(Analytic ~ Assessment, data = all_scores)
+
+f_value <- summary(anova_result)[[1]]$"F value"[1]
+p_value <- summary(anova_result)[[1]]$"Pr(>F)"[1]
+
+cat("F-value:", f_value, "\n")
+cat("p-value:", p_value, "\n")
