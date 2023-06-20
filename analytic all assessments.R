@@ -19,22 +19,22 @@ FINAL_Free_tuition_and_UBI <- read_xlsx("C:/Users/kalen/OneDrive - University of
 
 HW_Identifying_Barriers <- HW_Identifying_Barriers %>% 
   select(Analytic) %>% 
-  mutate(Assessment = "Identifying Barriers HW")
+  mutate(Assessment = "Identifying Barriers HW (1)")
 HW_Youth_and_Unions <- HW_Youth_and_Unions %>% 
   select(Analytic) %>% 
-  mutate(Assessment = "Youth and Unions HW")
+  mutate(Assessment = "Youth and Unions HW (2)")
 HW_Womens_March <- HW_Womens_March %>%
   select(Analytic) %>%
-  mutate(Assessment = "Women's March HW")
+  mutate(Assessment = "Women's March HW (3)")
 HW_Free_tuition_and_UBI <- HW_Free_tuition_and_UBI %>% 
   select(Analytic) %>% 
-  mutate(Assessment = "Free tuition and UBI HW")
+  mutate(Assessment = "Free tuition and UBI HW (4)")
 FINAL_Youth_and_Unions <- FINAL_Youth_and_Unions %>% 
   select(Analytic) %>% 
-  mutate(Assessment = "Youth and Unions related exam responses")
+  mutate(Assessment = "Youth and Unions related exam responses (5)")
 FINAL_Free_tuition_and_UBI <- FINAL_Free_tuition_and_UBI %>% 
   select(Analytic) %>% 
-  mutate(Assessment = "Free tuition and UBI related exam responses")
+  mutate(Assessment = "Free tuition and UBI related exam responses (6)")
 
 # combine to one data set
 all_scores <- rbind(HW_Identifying_Barriers, HW_Youth_and_Unions, HW_Womens_March, HW_Free_tuition_and_UBI, FINAL_Youth_and_Unions, FINAL_Free_tuition_and_UBI)
@@ -48,10 +48,11 @@ all_scores %>%
   group_by(Variable, Assessment) %>%
   summarise(mean = mean(score, na.rm = TRUE),
             sd = sd(score, na.rm = TRUE)) %>%
-  mutate(Assessment = factor(Assessment, levels = c("Identifying Barriers HW", "Youth and Unions HW", "Women's March HW", "Free tuition and UBI HW", "Youth and Unions related exam responses", "Free tuition and UBI related exam responses"))) %>%
-  ggplot(aes(x = Variable, y = mean, fill = Assessment)) +
+  mutate(Assessment = factor(Assessment, levels = c("Identifying Barriers HW (1)", "Youth and Unions HW (2)", "Women's March HW (3)", "Free tuition and UBI HW (4)", "Youth and Unions related exam responses (5)", "Free tuition and UBI related exam responses (6)"))) %>%
+  ggplot(aes(x = Assessment, y = mean, fill = Assessment)) +
   geom_bar(position = "dodge", stat = "identity") +
   geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = 0.2, position = position_dodge(0.9)) +
   scale_fill_manual(values = my_colors) +
-  labs(title = "", caption = "Percentage of words in student responses that indicate analytic thinking.", x = "Linguistic dimension", y = "Mean score") +
-  theme(legend.position = "bottom")
+  labs(title = "", caption = "Percentage of words in student responses indicative of analytic thinking.", x = "Assessment", y = "Mean score") +
+  theme(legend.position = "right") +
+  scale_x_discrete(labels = c("Identifying Barriers HW (1)" = "(1)", "Youth and Unions HW (2)" = "(2)", "Women's March HW (3)" = "(3)", "Free tuition and UBI HW (4)" = "(4)", "Youth and Unions related exam responses (5)" = "(5)", "Free tuition and UBI related exam responses (6)" = "(6)"))
